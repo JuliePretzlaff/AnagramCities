@@ -1,18 +1,18 @@
 const cities = require('cities.json');
 
+// hash city name then add it to object at proper key
 function hashCities(cities) {
   let cityObject = {};
 
-  // hash city name then add it to object
   cities.forEach(city => {
     let hashedCity = '';
-    const lowerCaseCity = city.name
+    const sortedCity = city.name
       .toLowerCase()
       .split('')
       .sort()
       .join('');
-    for (let i = 0; i < lowerCaseCity.length; i += 1) {
-      hashedCity += lowerCaseCity.charCodeAt(i);
+    for (let i = 0; i < sortedCity.length; i++) {
+      hashedCity += sortedCity.charCodeAt(i);
     }
     if (!cityObject[hashedCity]) {
       cityObject[hashedCity] = [city.name];
@@ -20,46 +20,47 @@ function hashCities(cities) {
       cityObject[hashedCity].push(city.name);
     }
   });
-  // no duplicates here
-  let finalFreshArray = [];
+  return cityObject;
+}
 
-  // remove duplicate city names from each key's array
+function removeDuplicates(cityObject) {
+  let finalRefreshedArray = [];
+  // filter duplicate city names from each key's array into 'refreshedArray'
   for (var key in cityObject) {
     if (cityObject[key].length > 1) {
-      var freshArray = [];
-      let stringToDisplay = '';
-      for (let i = 0; i < cityObject[key].length; i += 1) {
-        if (!freshArray.includes(cityObject[key][i]))
-          freshArray.push(cityObject[key][i]);
-        if (freshArray.length > 1 && !finalFreshArray.includes(freshArray)) {
-          finalFreshArray.push(freshArray);
+      let refreshedArray = [];
+      for (let i = 0; i < cityObject[key].length; i++) {
+        if (!refreshedArray.includes(cityObject[key][i]))
+          refreshedArray.push(cityObject[key][i]);
+        // filter duplicate anagram sets into 'finalRefreshedArray'
+        if (
+          refreshedArray.length > 1 &&
+          !finalRefreshedArray.includes(refreshedArray)
+        ) {
+          finalRefreshedArray.push(refreshedArray);
         }
       }
     }
   }
-  console.log(finalFreshArray);
-  for (let i = 0; i < finalFreshArray.length; i++) {
+  return finalRefreshedArray;
+}
+
+// print anagram sets to console
+// finalRefreshedArray is array of arrays/sets of anagrams
+function printStrings(finalRefreshedArray) {
+  for (let i = 0; i < finalRefreshedArray.length; i++) {
     let stringToDisplay = '';
-    for (let k = 0; k < finalFreshArray[i].length; k++) {
-      if (k === finalFreshArray[i].length - 1) {
-        stringToDisplay += `${finalFreshArray[i][k]}`;
+    for (let k = 0; k < finalRefreshedArray[i].length; k++) {
+      if (k === finalRefreshedArray[i].length - 1) {
+        stringToDisplay += `${finalRefreshedArray[i][k]}`;
       } else {
-        stringToDisplay += `${finalFreshArray[i][k]}, `;
+        stringToDisplay += `${finalRefreshedArray[i][k]}, `;
       }
     }
-
     console.log(stringToDisplay);
   }
 }
 
-let test = [
-  { name: 'Tokyo' },
-  { name: 'Kyoto' },
-  { name: 'i h' },
-  { name: 'hi' },
-  { name: 'iihi' },
-  { name: 'hi' },
-  { name: 'hi' }
-];
-
-hashCities(cities);
+const cityObject = hashCities(cities);
+const finalRefreshedArray = removeDuplicates(cityObject);
+printStrings(finalRefreshedArray);
